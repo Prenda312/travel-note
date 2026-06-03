@@ -1,5 +1,4 @@
-const STORAGE_KEY = "mom-travel-helper-v1";
-const REMOVED_DEFAULT_ITEMS = new Set(["可以在线编辑功能"]);
+const STORAGE_KEY = "mom-travel-helper-v2";
 
 const defaultCategories = [
   {
@@ -7,20 +6,20 @@ const defaultCategories = [
     title: "随身包准备",
     items: [
       "护照",
-      "证件",
-      "AI眼镜",
-      "保暖衣物",
+      "证件，一共有4个：I-20、入关文件、行程单、解释信。解释信不是很必要，如果真的不知道他说了什么，可以把信给他，里面有我的信息。",
+      "AI眼镜，等你一回家，咱俩视频激活她",
+      "保暖衣物，飞机上很冷，得带厚袜子，最好有个连帽衫，能护住脖子、背、肚子、脚踝和膝盖",
       "眼罩防灯光晃",
       "U形枕",
-      "一次性拖鞋",
+      "一次性拖鞋，飞机上走动方便",
       "手机卡",
-      "USB接口线，防止手机没电",
+      "USB接口线，防止手机没电。充电宝得拿正规的，3C认证的，可以问问哥哥有没有。",
       "大水杯 500-600ml，飞机上接水不方便",
-      "化妆包：小唇膏、护肤小样、补水喷雾",
-      "常用药和创可贴",
+      "化妆包：小唇膏、护肤小样、补水喷雾。飞机上很干，买了个保湿口罩。",
+      "常用药：心脏的、腿的。保健品这边都有。",
       "转换插头",
-      "纸巾和湿巾",
-      "纸质行程单和住宿地址",
+      "纸巾和湿巾，不是很必要",
+      "iPhone手机",
     ].map(createItem),
   },
   {
@@ -42,11 +41,11 @@ const defaultCategories = [
     title: "出发前确认",
     items: [
       "确认航班时间和登机口",
-      "检查签证或入境材料",
+      "检查签证或入境材料，不要拿什么生鲜肉啥的",
       "提前开通国际漫游或确认手机卡可用",
       "下载离线地图和翻译软件",
       "告诉家人航班号和到达时间",
-      "确认银行卡、现金和支付方式",
+      "确认银行卡，拿个 Visa 卡吧",
     ].map(createItem),
   },
 ];
@@ -243,48 +242,10 @@ function loadState() {
   try {
     const parsed = JSON.parse(saved);
     if (!Array.isArray(parsed)) return cloneDefaults();
-    return mergeDefaultItems(parsed);
+    return parsed;
   } catch {
     return cloneDefaults();
   }
-}
-
-function mergeDefaultItems(savedCategories) {
-  let changed = false;
-
-  savedCategories.forEach((category) => {
-    const nextItems = category.items.filter((item) => !REMOVED_DEFAULT_ITEMS.has(item.text));
-    if (nextItems.length !== category.items.length) {
-      category.items = nextItems;
-      changed = true;
-    }
-  });
-
-  defaultCategories.forEach((defaultCategory) => {
-    let savedCategory = savedCategories.find((category) => category.id === defaultCategory.id);
-    if (!savedCategory) {
-      savedCategories.push({
-        ...defaultCategory,
-        items: defaultCategory.items.map((item) => ({ ...item, id: crypto.randomUUID() })),
-      });
-      changed = true;
-      return;
-    }
-
-    defaultCategory.items.forEach((defaultItem) => {
-      const hasItem = savedCategory.items.some((item) => item.text === defaultItem.text);
-      if (!hasItem) {
-        savedCategory.items.push({ ...defaultItem, id: crypto.randomUUID() });
-        changed = true;
-      }
-    });
-  });
-
-  if (changed) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(savedCategories));
-  }
-
-  return savedCategories;
 }
 
 function cloneDefaults() {
