@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>妈妈出国旅行帮手</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="summary-panel" aria-labelledby="app-title">
+        <div class="title-block">
+          <p class="eyebrow">Travel Companion</p>
+          <h1 id="app-title">妈妈出国旅行帮手</h1>
+          <p class="intro">随时勾选、补充和调整准备事项，进度会自动保存在这台设备上。</p>
+        </div>
+
+        <div class="progress-card" aria-live="polite">
+          <div class="progress-number"><span id="progressPercent">0</span>%</div>
+          <div class="progress-copy">
+            <span id="doneCount">0</span>/<span id="totalCount">0</span> 已完成
+          </div>
+          <div class="progress-track" aria-hidden="true">
+            <div id="progressFill" class="progress-fill"></div>
+          </div>
+        </div>
+
+        <div class="quick-actions">
+          <button id="resetDoneBtn" class="ghost-button" type="button">清空勾选</button>
+          <button id="restoreBtn" class="ghost-button" type="button">恢复默认清单</button>
+        </div>
+      </section>
+
+      <section class="tool-panel" aria-label="添加准备事项">
+        <form id="addForm" class="add-form">
+          <label>
+            <span>放在哪一类</span>
+            <select id="categorySelect" name="category"></select>
+          </label>
+          <label class="wide-field">
+            <span>新增事项</span>
+            <input id="itemInput" name="item" type="text" placeholder="比如：常用药、转换插头、纸质行程单" autocomplete="off" />
+          </label>
+          <button class="primary-button" type="submit">添加</button>
+        </form>
+      </section>
+
+      <section id="lists" class="lists" aria-label="旅行准备清单"></section>
+    </main>
+
+    <template id="categoryTemplate">
+      <article class="category">
+        <header class="category-header">
+          <div>
+            <h2></h2>
+            <p class="category-meta"></p>
+          </div>
+          <button class="small-button add-here" type="button">添加</button>
+        </header>
+        <ul class="checklist"></ul>
+      </article>
+    </template>
+
+    <template id="itemTemplate">
+      <li class="check-item">
+        <label class="check-label">
+          <input type="checkbox" />
+          <span class="custom-check" aria-hidden="true"></span>
+          <span class="item-text" contenteditable="true" spellcheck="false"></span>
+        </label>
+        <button class="icon-button delete-item" type="button" aria-label="删除事项">×</button>
+      </li>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>
