@@ -236,7 +236,7 @@ input[type="text"]:focus,
 
 .check-item {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 36px;
+  grid-template-columns: minmax(0, 1fr) 36px 36px;
   gap: 8px;
   align-items: center;
   min-height: 48px;
@@ -301,6 +301,11 @@ input[type="text"]:focus,
   overflow-wrap: anywhere;
 }
 
+.item-text[contenteditable="true"] {
+  background: #fff;
+  border-color: var(--accent);
+}
+
 .check-label input:checked ~ .item-text {
   color: #7a8781;
   text-decoration: line-through;
@@ -317,6 +322,14 @@ input[type="text"]:focus,
 
 .icon-button:hover {
   background: rgba(201, 102, 63, 0.12);
+}
+
+.edit-item {
+  color: var(--accent-dark);
+}
+
+.edit-item:hover {
+  background: rgba(22, 122, 114, 0.12);
 }
 
 @media (max-width: 820px) {

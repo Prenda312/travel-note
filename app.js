@@ -1,4 +1,5 @@
 const STORAGE_KEY = "mom-travel-helper-v1";
+const REMOVED_DEFAULT_ITEMS = new Set(["可以在线编辑功能"]);
 
 const defaultCategories = [
   {
@@ -127,6 +128,7 @@ function renderLists() {
       const itemNode = itemTemplate.content.firstElementChild.cloneNode(true);
       const checkbox = itemNode.querySelector("input");
       const text = itemNode.querySelector(".item-text");
+      const editButton = itemNode.querySelector(".edit-item");
       const deleteButton = itemNode.querySelector(".delete-item");
 
       checkbox.checked = item.done;
@@ -136,29 +138,62 @@ function renderLists() {
       });
 
       text.textContent = item.text;
+      text.dataset.originalText = item.text;
       text.addEventListener("blur", () => {
-        const nextText = text.textContent.trim();
-        if (!nextText) {
-          removeItem(category.id, item.id);
-          return;
-        }
-        item.text = nextText;
-        persist();
+        saveItemText(category.id, item, text);
       });
 
       text.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
           event.preventDefault();
+          saveItemText(category.id, item, text);
+          text.blur();
+        }
+
+        if (event.key === "Escape") {
+          event.preventDefault();
+          text.textContent = text.dataset.originalText;
+          text.setAttribute("contenteditable", "false");
           text.blur();
         }
       });
 
+      editButton.addEventListener("click", () => startEditing(text));
       deleteButton.addEventListener("click", () => removeItem(category.id, item.id));
       list.append(itemNode);
     });
 
     listsEl.append(categoryNode);
   });
+}
+
+function startEditing(text) {
+  text.setAttribute("contenteditable", "true");
+  text.focus();
+
+  const selection = window.getSelection();
+  const range = document.createRange();
+  range.selectNodeContents(text);
+  range.collapse(false);
+  selection.removeAllRanges();
+  selection.addRange(range);
+}
+
+function saveItemText(categoryId, item, text) {
+  if (text.getAttribute("contenteditable") !== "true") return;
+
+  const nextText = text.textContent.trim();
+  text.setAttribute("contenteditable", "false");
+
+  if (!nextText) {
+    removeItem(categoryId, item.id);
+    return;
+  }
+
+  item.text = nextText;
+  text.textContent = nextText;
+  text.dataset.originalText = nextText;
+  persist();
 }
 
 function renderProgress() {
@@ -207,10 +242,48 @@ function loadState() {
   try {
     const parsed = JSON.parse(saved);
     if (!Array.isArray(parsed)) return cloneDefaults();
-    return parsed;
+    return mergeDefaultItems(parsed);
   } catch {
     return cloneDefaults();
   }
+}
+
+function mergeDefaultItems(savedCategories) {
+  let changed = false;
+
+  savedCategories.forEach((category) => {
+    const nextItems = category.items.filter((item) => !REMOVED_DEFAULT_ITEMS.has(item.text));
+    if (nextItems.length !== category.items.length) {
+      category.items = nextItems;
+      changed = true;
+    }
+  });
+
+  defaultCategories.forEach((defaultCategory) => {
+    let savedCategory = savedCategories.find((category) => category.id === defaultCategory.id);
+    if (!savedCategory) {
+      savedCategories.push({
+        ...defaultCategory,
+        items: defaultCategory.items.map((item) => ({ ...item, id: crypto.randomUUID() })),
+      });
+      changed = true;
+      return;
+    }
+
+    defaultCategory.items.forEach((defaultItem) => {
+      const hasItem = savedCategory.items.some((item) => item.text === defaultItem.text);
+      if (!hasItem) {
+        savedCategory.items.push({ ...defaultItem, id: crypto.randomUUID() });
+        changed = true;
+      }
+    });
+  });
+
+  if (changed) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(savedCategories));
+  }
+
+  return savedCategories;
 }
 
 function cloneDefaults() {
