@@ -173,6 +173,7 @@ input[type="text"]:focus,
 .primary-button,
 .ghost-button,
 .small-button,
+.edit-button,
 .icon-button {
   min-height: 40px;
   border-radius: 8px;
@@ -187,11 +188,18 @@ input[type="text"]:focus,
 }
 
 .ghost-button,
-.small-button {
+.small-button,
+.edit-button {
   padding: 0 14px;
   background: #fff;
   border-color: var(--line);
   color: var(--accent-dark);
+}
+
+.edit-button {
+  min-height: 34px;
+  padding: 0 10px;
+  font-size: 0.88rem;
 }
 
 .lists {
@@ -236,7 +244,7 @@ input[type="text"]:focus,
 
 .check-item {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 36px 36px;
+  grid-template-columns: minmax(0, 1fr) 54px 36px;
   gap: 8px;
   align-items: center;
   min-height: 48px;
@@ -299,6 +307,7 @@ input[type="text"]:focus,
   padding: 6px 8px;
   line-height: 1.45;
   overflow-wrap: anywhere;
+  cursor: text;
 }
 
 .item-text[contenteditable="true"] {
@@ -322,10 +331,6 @@ input[type="text"]:focus,
 
 .icon-button:hover {
   background: rgba(201, 102, 63, 0.12);
-}
-
-.edit-item {
-  color: var(--accent-dark);
 }
 
 .edit-item:hover {

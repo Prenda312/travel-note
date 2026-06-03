@@ -158,6 +158,7 @@ function renderLists() {
         }
       });
 
+      text.addEventListener("click", () => startEditing(text));
       editButton.addEventListener("click", () => startEditing(text));
       deleteButton.addEventListener("click", () => removeItem(category.id, item.id));
       list.append(itemNode);
